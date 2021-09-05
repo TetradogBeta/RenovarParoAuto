@@ -33,16 +33,23 @@ class User:
                 "urlDesti":"Renovacio.do",
                 "botonInput":"Acceptar",
             };
-            self._Session= requests.Session();
-            response = self._Session.post(User.UrlLogin, data=payload, proxies=User.Proxies);
-            if response.status_code == 200:
-                try:
-                    correcte="RENOVAR LA DEMANDA" in str(response.content);
-                except:
-                    raise Exception("Error al parsear la info");    
-            else:
-                raise Exception("Usuario y/o contraseña equivocados y quizás el tipo también!");
+            try:
+                self._Session= requests.Session();
+                response = self._Session.post(User.UrlLogin, data=payload, proxies=User.Proxies);
+                if response.status_code == 200:
+                    try:
+                        correcte="RENOVAR LA DEMANDA" in str(response.content);
+                    except:
+                        raise Exception("Error al parsear la info");    
+                else:
+                    raise Exception("Usuario y/o contraseña equivocados y quizás el tipo también!");
+            except:
+                self._Session=None;
+
         return self._Session;
+    
+    def IsOk(self):
+        return self.Session is not None;
         
 
     def Renovar(self):
