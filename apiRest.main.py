@@ -1,31 +1,52 @@
 from User import User
-from flask import Flask
-
+from flask import Flask, request
+from flask_cors import CORS
 import json
 
 
 
 app = Flask(__name__);
+cors = CORS(app, resources={r"/*": {"origins": "*"}});
 
 
 @app.route("/Comproba", methods = ['POST'])
 def Check():
-    return json.dumps({'result':GetUser(request).IsOk()});
+    return DoIt(lambda user:user.IsOk());
 
 @app.route("/Alta", methods = ['POST'])
 def Alta():
-    return json.dumps(result=GetUser(request).Alta());
+    return DoIt(lambda user:user.Alta());
 
 @app.route("/Baixa", methods = ['POST'])
 def Baixa():
-    return json.dumps(result=GetUser(request).Baja());
+    return DoIt(lambda user:user.Baja());
 
 @app.route("/Actualitza", methods = ['POST'])
 def Actualitza():
-    return json.dumps(result=GetUser(request).Update());
+    return DoIt(Update);
 
-def GetUser(request):
-    return User(request.form.get("user"),request.form.get("password"));
+def Update(user):
+    user.Update();
+    return {
+            'password':user.Password,
+            'date':str(user.DataRenovacio).split(" ")[0]
+        };
+
+def GetUser():
+    if request.is_json:
+        user= User(request.json["user"],request.json["password"]);
+    else:
+        user= None;
+    return user;
+
+def DoIt(method):
+    user=GetUser();
+    if user is None:
+        response=json.dumps({'error':True,'result':'only json'});
+    else:
+        response= json.dumps({'error':False,'result':method(user)});
+
+    return response;
 
 if __name__ == '__main__':
     app.run(port='5002');
