@@ -13,8 +13,38 @@
         <script src="user.js"></script>
         <script>
             $(function(){
+                const USER="User";
+                const HIDE="init";
                 //si te el javascript activat puc continuar
-                $("#main").removeClass("init");
+                $("#main").removeClass(HIDE);
+
+                if(localStorage.getItem(USER)!==null){
+                    //si ya tiene usuario lo cargo
+                    $("#userWithLogin").removeClass(HIDE);
+                }else{
+                    //si no pues pongo la pagina de login
+                    $("#userToLogin").removeClass(HIDE);
+                }
+
+                $("#btnLogin").click(function(){
+                    var tempUser;
+                    var user=$("#inpUser").val();
+                    var password=$("#inpPassword").val();
+                    if(user.length!=9){
+                        alert("El DNI/NIE no es correcte!");
+                    }
+                    else if(password.length!=4){
+                        alert("El PIN no es correcte!");
+                    }else{
+                        tempUser=new User(user,password);
+                        tempUser.Login().then(resp=>{
+                            alert("login success");
+                        }).catch(resp=>{
+                            alert("login error");
+                        });
+                    }
+                });
+
 
 
 
@@ -26,7 +56,22 @@
             <!--explicar que es necessari pel funcionament de la web i si no volen redirigir a la web oficial-->
         </noscript>
         <div id="main" class="container init">
-            
+            <div id="userToLogin" class="row init">
+                <div class="row">
+                    <label class="col-12 col-sm-4">DNI/NIE</label>
+                    <input id="inpUser" type="text" class="col-12 col-sm-5" placeholder="ej: 44556677F/A4455667B"/>
+                </div>
+                <div class="row">
+                    <label class="col-12 col-sm-4">Pin</label>
+                    <input id="inpPassword" type="text" class="col-12 col-sm-5" placeholder="ej: 1EQ8"/>
+                </div>
+                <div class="row">
+                    <input id="btnLogin" type="button" value="Login" class="col-12 offset-sm-4 col-sm-5"/>
+                </div>
+            </div>
+            <div id="userWithLogin" class="row init">
+
+            </div>
         </div>
     </body>
 </html>
