@@ -3,7 +3,6 @@ import datetime
 
 class User:
     UrlFuncions="https://www.oficinadetreball.gencat.cat/socfuncions";
-    UrlLogin="https://www.oficinadetreball.gencat.cat/socfuncions/LoginNifCodi.do";
     NIE='E';
     DNI='D';
     CampoDNI='dni';#numero y letra
@@ -19,13 +18,14 @@ class User:
             self.TipoDNI=User.DNI;
         else:
             self.TipoDNI=User.NIE;
-        self.User=user;
-        self.Password=password;
+        self.User=user.upper();
+        self.Password=password.upper();
         self._Session=None;
         self.DataRenovacio=None;
     @property
     def Session(self):
         if self._Session is None:
+            relUrl="/LoginNifCodi.do";
             payload={
                 User.CampoDNI:self.User,
                 User.CampoPIN:self.Password,
@@ -35,7 +35,7 @@ class User:
             };
             try:
                 self._Session= requests.Session();
-                response = self._Session.post(User.UrlLogin, data=payload, proxies=User.Proxies);
+                response = self._Session.post(User.UrlFuncions+relUrl, data=payload, proxies=User.Proxies);
                 if response.status_code == 200:
                     try:
                         correcte="RENOVAR LA DEMANDA" in str(response.content);

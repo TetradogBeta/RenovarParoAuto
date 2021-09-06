@@ -11,8 +11,8 @@ class User{
         }else{
             this._DNIType=NIE;
         }
-        this._Password=password;
-        this._User=user;
+        this._Password=password.toUpperCase();
+        this._User=user.toUpperCase();
     }
     get User(){
         return this._User;
@@ -93,15 +93,17 @@ class User{
         return new Promise((resolver,rechazar)=>{
             var xhr = new XMLHttpRequest();
             xhr.open("POST", url,true);
+            xhr.withCredentials=true;
             xhr.onload=function(){
                 if(this.status==200){
-                resolver(this);
+                    resolver(this);
                 }
                 else{
                     rechazar(this);
                 }
             };
             xhr.send(formData);
+      
 
         });
     }
