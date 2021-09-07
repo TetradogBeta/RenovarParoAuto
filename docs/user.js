@@ -42,14 +42,14 @@ class User{
         return User.UrlFuncions+"/DownState";
     }
     static get UrlDardo(){
-        return User.UrlFuncions+"/PeticioDardo.do";
+        return User.UrlFuncions+"/Dardo";
     }
     static get UrlLogin(){
         return User.UrlFuncions+"/Check";
 
     }
     static get UrlFuncions(){
-        return /*"http://192.168.0.19:5002";*/"https://tetradogbeta.ddns.net:5005";
+        return /*"http://192.168.0.19:5002";*/"https://tetradogbeta.ddns.net:5002";
     }
 
     static _DoIt(url,formData){

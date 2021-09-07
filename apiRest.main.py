@@ -2,6 +2,7 @@ from User import User
 from flask import Flask, request
 from flask_cors import CORS
 
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
@@ -10,7 +11,7 @@ import json
 port=5002;
 app = Flask(__name__);
 cors = CORS(app, resources={r"/*": {"origins": "https://tetradogbeta.github.io/RenovarParoAuto/*"}});#
-
+#falta /Dardo
 @app.route("/Check", methods = ['POST'])
 def Check():
     return DoIt(lambda user:user.IsOk());
@@ -63,4 +64,4 @@ def IsServerWakeUp():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",port=str(port),debug=False);
+    app.run(host="0.0.0.0",port=str(port),debug=False,ssl_context=('cert.pem', 'key.pem'));
