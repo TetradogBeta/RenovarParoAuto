@@ -49,7 +49,7 @@ class User{
 
     }
     static get UrlFuncions(){
-        return "http://192.168.0.19:5002"; //"http://tetradogbeta.ddns.net:5005";
+        return /*"http://192.168.0.19:5002";*/"http://tetradogbeta.ddns.net:5005";
     }
 
     static _DoIt(url,formData){
