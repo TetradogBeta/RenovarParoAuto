@@ -1,5 +1,6 @@
 <html>
     <head>
+        <meta charset="UTF-8"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
         <style>
             .init{
@@ -14,18 +15,60 @@
         <script>
             $(function(){
                 const USER="User";
+                const PASSWORD="Passoword";
                 const HIDE="init";
+                var user;
                 //si te el javascript activat puc continuar
                 $("#main").removeClass(HIDE);
 
                 if(localStorage.getItem(USER)!==null){
                     //si ya tiene usuario lo cargo
-                    $("#userWithLogin").removeClass(HIDE);
+                    $("#userToLogin").hide();
+                    user=new User(localStorage[USER],localStorage[PASSWORD]);
                 }else{
                     //si no pues pongo la pagina de login
-                    $("#userToLogin").removeClass(HIDE);
+                    $("#userWithLogin").hide();
                 }
+                $("#btnRenovar").click(function(){
+                    user.UpdateState().then(resp=>{
+                        $("#lblProperaData").val(resp.Data);
+                        $("#lblPassword").val(resp.Password);
 
+                    }).catch(resp=>{
+                        if(resp!==null){
+                            alert("Error durant la actulització:"+resp);
+                        }else{
+                            alert("Error intern mentre es disposaba a actualitzar");
+                        }
+                    });
+
+                });
+                $("#btnAlta").click(function(){
+                    user.UpState().then(resp=>{
+                        alert("Donat d'alta correctament!");
+
+                    }).catch(resp=>{
+                        if(resp!==null){
+                            alert("Error al donar d'alta:"+resp);
+                        }else{
+                            alert("Error intern al donar d'alta");
+                        }
+                    });
+
+                });
+                $("#btnBaixa").click(function(){
+                    user.DownState().then(resp=>{
+                        alert("Donat de baixa correctament!");
+
+                    }).catch(resp=>{
+                        if(resp!==null){
+                            alert("Error al donar de baixa:"+resp);
+                        }else{
+                            alert("Error intern al donar de baixa");
+                        }
+                    });
+
+                });
                 $("#btnLogin").click(function(){
                     var tempUser;
                     var user=$("#inpUser").val();
@@ -38,9 +81,16 @@
                     }else{
                         tempUser=new User(user,password);
                         tempUser.Login().then(resp=>{
-                            alert("login success");
+                            localStorage.setItem(USER,user);
+                            localStorage.setItem(PASSWORD,password);
+                            $("#userToLogin").hide();
+                            $("#userWithLogin").show();
+                            user=tempUser;
                         }).catch(resp=>{
-                            alert("login error");
+                            if(resp!==null)
+                                alert("login error");
+                            else
+                                alert("login error send");
                         });
                     }
                 });
@@ -56,7 +106,7 @@
             <!--explicar que es necessari pel funcionament de la web i si no volen redirigir a la web oficial-->
         </noscript>
         <div id="main" class="container init">
-            <div id="userToLogin" class="row init">
+            <div id="userToLogin" class="row">
                 <div class="row">
                     <label class="col-12 col-sm-4">DNI/NIE</label>
                     <input id="inpUser" type="text" class="col-12 col-sm-5" placeholder="ej: 44556677F/A4455667B"/>
@@ -69,8 +119,18 @@
                     <input id="btnLogin" type="button" value="Login" class="col-12 offset-sm-4 col-sm-5"/>
                 </div>
             </div>
-            <div id="userWithLogin" class="row init">
-
+            <div id="userWithLogin" class="row">
+                <div class="row">
+                    <input id="btnRenovar" type="button" value="Renovar ara!" class="col-5"/>
+                    <label id="lblProperaData" class="col-5"></label>
+                    <label id="lblPassword" class="col-2"></label>
+                </div>
+                <div class="row">
+                    <input id="btnAlta" type="button" value="Alta" class="col-5"/>
+                </div>
+                <div class="row">
+                    <input id="btnBaixa" type="button" value="Baixa" class="col-5"/>
+                </div>
             </div>
         </div>
     </body>

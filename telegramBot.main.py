@@ -52,7 +52,7 @@ def Renovar(cli,dicUsers,dicAutenticacioUsers,dicTelegramUsers):
         if not user.IsOk():
             cli.SendMessage("Imposible fer login, actualizta les dades per entrar primer!");
         else:
-            user.Update();
+            user.UpdateData();
             cli.SendMessage("Actualitzat correctament!\nPin: "+user.Password+"\nData renovació: "+str(user.DataRenovacio).split(" ")[0]);
     else:
         cli.SendMessage("Primer t'has de donar d'alta!!");

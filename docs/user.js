@@ -4,13 +4,6 @@
 class User{
 
     constructor(user,password){
-        const NIE='E';
-        const DNI='D';
-        if(isNaN(user[0])){
-            this._DNIType=DNI;
-        }else{
-            this._DNIType=NIE;
-        }
         this._Password=password.toUpperCase();
         this._User=user.toUpperCase();
     }
@@ -20,89 +13,65 @@ class User{
     get Password(){
         return this._Password;
     }
-    get DNIType(){
-        return this._DNIType;
-    }
-    get LoginFormData(){
-        var data=new FormData();
-        data.append('dni',this.User);
-        data.append('tarjeta',this.Password);
-        data.append('nie',this.DNIType);
-        data.append("urlDesti","Renovacio.do");
-        data.append("botonInput","Acceptar");
-        return data;
-    }
-    get UpdateStateFormData(){
-        var data=new FormData();
-        data.append("botonInput","Renovar la demanda" );
-        return data;
-    }
-    get UpStateFormData(){
-        var data=new FormData();
-        data.append("accio","altainscripcio");
-        data.append("origen","baixa");
-        data.append("botonInput","Alta per inscripció");
-        data.append("submitDummy","");
-            
-        return data;
-    }
-    get DownStateFormData(){
-        var data=new FormData();
-        data.append( "accio","baixavoluntaria");
-        data.append( "origen","alta");
-        data.append( "botonInput","Baixa voluntària");
-        data.append( "submitDummy","");
-        return data;          
-        
+    get UserData(){
+        return {"user":this.User,"password":this.Password};
     }
 
+
+
     Login(){
-        return User._DoIt(User.UrlLogin,this.LoginFormData);
+        return User._DoIt(User.UrlLogin,this.UserData);
     }
     DownState(){
-        return User._DoIt(User.UrlDownState,this.DownStateFormData);
+        return User._DoIt(User.UrlDownState,this.UserData);
     }
     UpState(){
-        return User._DoIt(User.UrlUpState,this.UpStateFormData);
+        return User._DoIt(User.UrlUpState,this.UserData);
     }
     UpdateState(){
-        return User._DoIt(User.UrlUpdateState,this.UpdateStateFormData);
+        return User._DoIt(User.UrlUpdateState,this.UserData);
     }
 
     static get UrlUpdateState(){
-        return User.UrlFuncions+"/ResultatRenovacioT.do";
+        return User.UrlFuncions+"/UpdateState";
     }
     static get UrlUpState(){
-        return User.UrlFuncions+"/ControlCanviSituacioAdm.do";
+        return User.UrlFuncions+"/UpState";
     }
     static get UrlDownState(){
-        return User.UrlFuncions+"/ControlCanviSituacioAdm.do";
+        return User.UrlFuncions+"/DownState";
     }
     static get UrlDardo(){
         return User.UrlFuncions+"/PeticioDardo.do";
     }
     static get UrlLogin(){
-        return User.UrlFuncions+"/LoginNifCodi.do";
+        return User.UrlFuncions+"/Check";
 
     }
     static get UrlFuncions(){
-        return "https://www.oficinadetreball.gencat.cat/socfuncions";
+        return "http://192.168.0.19:5002"; //"http://tetradogbeta.ddns.net:5005";
     }
 
     static _DoIt(url,formData){
         return new Promise((resolver,rechazar)=>{
             var xhr = new XMLHttpRequest();
             xhr.open("POST", url,true);
-            xhr.withCredentials=true;
+            xhr.setRequestHeader("Content-Type","application/json");
             xhr.onload=function(){
+                var result;
                 if(this.status==200){
-                    resolver(this);
+                    result=JSON.parse(this.responseText);
+                    if(!result.error){
+                        resolver(result.result);
+                    }else{
+                        rechazar(result.result);
+                    }
                 }
                 else{
-                    rechazar(this);
+                    rechazar(null);
                 }
             };
-            xhr.send(formData);
+            xhr.send(JSON.stringify(formData));
       
 
         });

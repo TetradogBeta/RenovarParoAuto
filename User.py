@@ -39,6 +39,7 @@ class User:
                 if response.status_code == 200:
                     try:
                         correcte="RENOVAR LA DEMANDA" in str(response.content);
+                        
                     except:
                         raise Exception("Error al parsear la info");    
                 else:
@@ -52,8 +53,8 @@ class User:
         return self.Session is not None;
         
 
-    def Renovar(self):
-        self.Alta();
+    def UpdateState(self):
+        self.UpState();
         relUrl="/ResultatRenovacioT.do";
         btn="botonInput";
         value="Renovar la demanda";
@@ -66,16 +67,14 @@ class User:
             try:
                 content=str(response.content);
                 correcte="per la qual cosa no podeu renovar la" not in content;
-                if correcte:
-                    self.DataRenovacio=User.GetData(content);
             except:
                 raise Exception("Error al fer login/donar d'alta");
         else:
             correcte=False;
         return correcte;
 
-    def Alta(self):
-        self.Baja();
+    def UpState(self):
+        self.DownState();
         relUrl="/ControlCanviSituacioAdm.do";
         payload={
             "accio":"altainscripcio",
@@ -97,7 +96,7 @@ class User:
             correcte=False;
         return correcte;
 
-    def Baja(self):
+    def DownState(self):
         relUrl="/ControlCanviSituacioAdm.do";
         payload={
             "accio":"baixavoluntaria",
@@ -119,20 +118,14 @@ class User:
             correcte=False;
         return correcte;
 
-    def Update(self):
-        self.Renovar();
+    def UpdateData(self):
+        self.UpdateState();
         relUrl="/PeticioDardo.do";
         response = self.Session.post(User.UrlFuncions+relUrl, data={}, proxies=User.Proxies);
         content= str(response.content);
         self.Password=content.split("Paraula de pas (PIN):&nbsp;\\n\\t\\t\\t\\t\\t\\t\\t&nbsp;")[1].split("</li>")[0];
         self.DataRenovacio=datetime.datetime.strptime(content.split("DATA PROPERA RENOVACI\\xd3</p>\\n<ul id=\"negrita\">")[1].split("</ul>")[0].replace(" ",""),'%d-%m-%Y');
 
-    @staticmethod
-    def GetData(html):
-        dataBruta= str(html.split("DATES PROPERES RENOVACIONS:")[1].split("<td>")[1].split("</td>")[0]);
-        dataBruta=dataBruta.replace("\\r","").replace("\\n","").replace("\\t","").replace(" ","");
-        date= datetime.datetime.strptime(dataBruta, '%d-%m-%Y');
-        return date;
     
     @staticmethod #https://www.geeksforgeeks.org/implement-isnumber-function-in-python/
     # Implementation of isNumber() function
